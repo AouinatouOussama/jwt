@@ -1,18 +1,21 @@
-package net.javaguides.demo.BLL;
+package net.javaguides.demo.BLL.Roles;
 
 import net.javaguides.demo.ClientModels.ApplicationRoleClient;
 import net.javaguides.demo.DAL.repository.ApplicationRoleRepo;
 import net.javaguides.demo.DAL.DataBaseEntities.ApplicationRole;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ApplicationRoleBLLImp implements ApplicationRoleBll{
+@Service
+public class ApplicationRoleBLLImp implements ApplicationRoleBLL {
 
     @Autowired
     ApplicationRoleRepo applicationRoleRepo;
+
 
     @Override
     public List<ApplicationRoleClient> GetAllApplicationRole() {
@@ -35,14 +38,31 @@ public class ApplicationRoleBLLImp implements ApplicationRoleBll{
                 ) ;
     }
 
-//    @Override
-//    public ApplicationRoleClient CreateApplicationRole(String roleName) {
-//        return applicationRoleRepo.save();
-//    }
+    @Override
+    public ApplicationRoleClient CreateApplicationRole(String roleName) {
+        ApplicationRole applicationRole = new ApplicationRole();
+        applicationRole.setRoleName(roleName);
+        return new ApplicationRoleClient(applicationRoleRepo.save(applicationRole).getRoleName());
+    }
 
     @Override
-    public void DeleteApplicationRole(Integer id) {
-        applicationRoleRepo.delete(applicationRoleRepo.findById(id).get());
+    public ApplicationRoleClient UpdateApplicationRole(Integer id,String roleName) {
+        ApplicationRole applicationRole = applicationRoleRepo.findById(id).get();
+        applicationRole.setRoleName(roleName);
+        applicationRoleRepo.save(applicationRole);
+        return new ApplicationRoleClient(applicationRole.getRoleName());
+    }
+
+
+    @Override
+    public boolean DeleteApplicationRole(Integer id) {
+        if (applicationRoleRepo.findById(id).get() != null){
+
+            applicationRoleRepo.delete(applicationRoleRepo.findById(id).get());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

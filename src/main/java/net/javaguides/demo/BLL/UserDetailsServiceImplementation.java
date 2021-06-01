@@ -1,5 +1,6 @@
 package net.javaguides.demo.BLL;
 
+import net.javaguides.demo.BLL.ApplicationUsers.ApplicationUserBLL;
 import net.javaguides.demo.DAL.DataBaseEntities.ApplicationUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,18 +26,18 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String emailOrUserName) throws UsernameNotFoundException {
         ApplicationUser applicationUser =
                 applicationUserBLL.
-                        loadUserByUsername(userName).
+                        loadUserByUsername(emailOrUserName).
                         orElseThrow(
-                                ()->new UsernameNotFoundException("the user " + userName + "was not found ")
+                                ()->new UsernameNotFoundException("the user " + emailOrUserName + "was not found ")
                         );
         // it's mandatory to passe the authorities to the user object bellow
         List<GrantedAuthority> authorities = new ArrayList<>();
-//        applicationUser.getRoles().forEach(applicationRole -> {
-//            authorities.add(new SimpleGrantedAuthority(applicationRole.getRoleName()));
-//        });
+        applicationUser.getRoles().forEach(applicationRole -> {
+            authorities.add(new SimpleGrantedAuthority(applicationRole.getRoleName()));
+        });
         // this is a security spring User that should be used here (see importations)
         return new User(applicationUser.getUsername(),applicationUser.getPassword(),authorities);
     }

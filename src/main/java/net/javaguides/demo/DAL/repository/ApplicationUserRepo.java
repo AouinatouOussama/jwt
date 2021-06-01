@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface ApplicationUserRepo extends JpaRepository<ApplicationUser,Long> {
 
     //so the user can authenticate either using his email or using his userName
-    @Query(value ="SELECT s from ApplicationUser s where  s.email Like :email OR s.username Like:email")
-    Optional<ApplicationUser> loadUserByUsername(@Param("email") String email);
+    @Query(value ="SELECT s from ApplicationUser s where  s.email Like :emailOrUserName OR s.username Like:emailOrUserName")
+    Optional<ApplicationUser> loadUserByUsername(@Param("emailOrUserName") String emailOrUserName);
 
 
 }

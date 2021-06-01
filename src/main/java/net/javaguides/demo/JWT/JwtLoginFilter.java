@@ -1,9 +1,10 @@
 package net.javaguides.demo.JWT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import net.javaguides.demo.ClientModels.Login;
+import net.javaguides.demo.ClientModels.ClientModelRequest.Login;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,7 +38,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                     .readValue(request.getInputStream(), Login.class);
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    login.getEmail(),
+                    login.getEmailOrUserName(),
                     login.getPassword()
             );
 
@@ -50,10 +51,19 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+
+        Claims claims = Jwts.claims().setSubject(authResult.getName());
+        claims.put("Authorities", authResult.getAuthorities());
+        claims.put("IsAuthenticated", authResult.isAuthenticated());
+        claims.put("Details", authResult.getDetails());
+        claims.put("Principals", authResult.getPrincipal());
+
         String token = Jwts.builder()
-                .setSubject(authResult.getName())
-                .claim("authorities", authResult.getAuthorities())
+                .setClaims(claims)
                 .setIssuedAt(new Date())
                 .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(2)))
                 .signWith(SignatureAlgorithm.HS256,"MySecretKey")

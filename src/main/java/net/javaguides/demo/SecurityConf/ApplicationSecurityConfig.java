@@ -6,6 +6,7 @@ import net.javaguides.demo.JWT.JwtVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,8 +42,9 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(new JwtVerifier(),JwtLoginFilter.class)
                 .authorizeRequests()
                 .antMatchers("/login/**","/register/**").permitAll()
- //               .antMatchers(HttpMethod.POST,"/applicationusers/**").hasAuthority("ADMIN")
-
+                .antMatchers(HttpMethod.GET,"/applicationusers/**").hasAnyAuthority("admin","superAdmin")
+                .antMatchers(HttpMethod.DELETE,"/applicationusers/**").hasAnyAuthority("admin","superAdmin")
+                .antMatchers(HttpMethod.PUT,"/applicationusers/{id}/applicationroles/{id}/**").hasAuthority("superAdmin")
                 //  .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest()
                 .authenticated();

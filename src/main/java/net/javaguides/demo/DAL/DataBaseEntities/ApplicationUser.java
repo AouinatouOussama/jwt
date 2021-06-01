@@ -2,48 +2,80 @@ package net.javaguides.demo.DAL.DataBaseEntities;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 public class ApplicationUser {
 
         @Id @GeneratedValue
         private Long id;
+        @Column (unique = true)
         private String email;
+     //   @Column (unique = true)
         private  String username;
+        private String fullName;
         private  String password;
         private String status;
+        private String profilePic;
+
         @ManyToMany (fetch = FetchType.EAGER)
         @JoinTable(
-                name = "Association_User_Role",
-                joinColumns = @JoinColumn(name = "user_id"),
-                inverseJoinColumns = @JoinColumn(name = "role_id")
+                name = "rolesUserAssociation",
+                joinColumns = @JoinColumn(name = "User_id"),
+                inverseJoinColumns = @JoinColumn(name = "Role_id")
         )
-        private Collection<ApplicationRole> roles = new ArrayList<>();
+        private List<ApplicationRole> roles = new ArrayList<>();
+
+
 
         public  ApplicationUser(){
-
         }
-
-        public ApplicationUser(String email, String username, String password, String status, Collection<ApplicationRole> roles) {
+        public ApplicationUser(String email, String username, String fullName, String password, String status, List<ApplicationRole> roles) {
                 this.email = email;
                 this.username = username;
+                this.fullName = fullName;
                 this.password = password;
                 this.status = status;
                 this.roles = roles;
         }
 
-        public Collection<ApplicationRole> getRoles() {
+        public String getProfilePic() {
+                return profilePic;
+        }
+
+        public void setProfilePic(String profilePic) {
+                this.profilePic = profilePic;
+        }
+
+        public String getFullName() {
+                return fullName;
+        }
+
+        public void setFullName(String fullName) {
+                this.fullName = fullName;
+        }
+
+        public List<ApplicationRole> getRoles() {
                 return roles;
         }
 
-        public void setRoles(Collection<ApplicationRole> roles) {
+        public void setRoles(List<ApplicationRole> roles) {
                 this.roles = roles;
         }
 
         public void AddRole(ApplicationRole applicationRole) {
-        this.roles.add(applicationRole);
+                if (this.roles == null){
+                        this.roles= new ArrayList<ApplicationRole>();
+                }
+                this.roles.add(applicationRole);
         }
+
+    public boolean RemoveRole(ApplicationRole applicationRole) {
+        if (this.roles == null){
+            System.out.println("has no role");
+        }
+        return this.roles.remove(applicationRole);
+    }
 
         public Long getId() {
                 return id;
@@ -97,6 +129,7 @@ public class ApplicationUser {
                         ", status='" + status + '\'' +
                         '}';
         }
+
 
 
 }

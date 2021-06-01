@@ -1,17 +1,24 @@
 package net.javaguides.demo.DAL.DataBaseEntities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 @Entity
 public class ApplicationRole {
     @Id @GeneratedValue
     private Integer id;
     private String roleName;
-
+    //to avoid the recursive problem
+    @JsonIgnore
     @ManyToMany (mappedBy = "roles")
-    private Collection<ApplicationUser> applicationUsers = new ArrayList<>();
+    private List<ApplicationUser> applicationUsers = new ArrayList<>();
+
+    public List<ApplicationUser> getApplicationUsers() {
+        return applicationUsers;
+    }
 
     public Integer getId() {
         return id;
