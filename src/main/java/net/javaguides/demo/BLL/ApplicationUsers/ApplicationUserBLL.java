@@ -1,5 +1,6 @@
 package net.javaguides.demo.BLL.ApplicationUsers;
 
+import net.javaguides.demo.ClientModels.ClientModelRequest.ChangePassword;
 import net.javaguides.demo.ClientModels.ClientModelResponse.ApplicationUserClient;
 import net.javaguides.demo.ClientModels.ClientModelRequest.RegisterForm;
 import net.javaguides.demo.ClientModels.ClientModelRequest.UpdateApplicationUser;
@@ -34,4 +35,6 @@ public interface ApplicationUserBLL {
     ApplicationUserClient GetApplicationUserByUsername(String username);
 
     boolean RemoveRoleToUser(Long userId, Integer roleId);
+
+    ApplicationUserClient ChangePasswordUser(String username, ChangePassword changePassword);
 }

@@ -44,7 +44,9 @@ public class JwtVerifier extends OncePerRequestFilter {
 
             String username = body.getSubject();
 
-            var authorities = (List<Map<String, String>>) body.get("authorities");
+            var authorities = (List<Map<String, String>>) body.get("Authorities")
+//                    get("authorities")
+                    ;
 
             Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
                     .map(m -> new SimpleGrantedAuthority(m.get("authority")))

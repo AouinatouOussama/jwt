@@ -57,10 +57,13 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authResult) throws IOException, ServletException {
 
         Claims claims = Jwts.claims().setSubject(authResult.getName());
+       // Claims claims = Jwts.claims();
         claims.put("Authorities", authResult.getAuthorities());
         claims.put("IsAuthenticated", authResult.isAuthenticated());
         claims.put("Details", authResult.getDetails());
         claims.put("Principals", authResult.getPrincipal());
+
+
 
         String token = Jwts.builder()
                 .setClaims(claims)

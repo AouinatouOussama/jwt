@@ -1,6 +1,7 @@
 package net.javaguides.demo.Controllers;
 
 import net.javaguides.demo.BLL.ApplicationUsers.ApplicationUserBLL;
+import net.javaguides.demo.ClientModels.ClientModelRequest.ChangePassword;
 import net.javaguides.demo.ClientModels.ClientModelRequest.RegisterForm;
 import net.javaguides.demo.ClientModels.ClientModelRequest.UpdateApplicationUser;
 import net.javaguides.demo.ClientModels.ClientModelResponse.ApplicationUserClient;
@@ -28,7 +29,8 @@ public class ApplicationUserController {
         return applicationUserBLL.GetApplicationUserById(id);
     }
 
-    @Secured({"user","admin","superAdmin"})
+    //why forbidden for a user
+    //user/admin/superadmin  can get the account by username
     @GetMapping("applicationusers/username/{username}")
     public ApplicationUserClient GetApplicationUserByUsername(@PathVariable String username){
         return applicationUserBLL.GetApplicationUserByUsername(username);
@@ -46,36 +48,17 @@ public class ApplicationUserController {
         return applicationUserBLL.UpdateApplicationUser(id,updateApplicationUser);
     }
 
-    @DeleteMapping("applicationusers/{id}")
+    @PutMapping("applicationusers/changepassword/{username}")
+    public ApplicationUserClient ChangePasswordUser(@PathVariable String username, @RequestBody ChangePassword changePassword){
+            return applicationUserBLL.ChangePasswordUser(username,changePassword);
+    }
+
+    // user can delete his account or can be deleted by admin
+    @DeleteMapping("delete/applicationusers/{id}")
     public boolean DeleteApplicationUser(@PathVariable Long id){
         return applicationUserBLL.DeleteApplicationUser(id);
     }
 
-
-    @PutMapping("applicationusers/{userId}/roles/{roleId}")
-    ApplicationUser AddRoleToUser(@PathVariable Long userId,
-                                  @PathVariable Integer roleId){
-
-        return applicationUserBLL.AddRoleToUser(userId,roleId);
-
-    }
-    @DeleteMapping("applicationusers/{userId}/roles/{roleId}")
-    boolean RemoveRoleToUser(@PathVariable Long userId,
-                                  @PathVariable Integer roleId){
-        return applicationUserBLL.RemoveRoleToUser(userId,roleId);
-    }
-
-    @PutMapping("applicationusers/{userId}/")
-    ApplicationUserClient ValidateUser(@PathVariable Long userId){
-
-        return applicationUserBLL.Validate(userId);
-
-    }
-
-    @GetMapping("applicationusers/notvalidated")
-    public List<ApplicationUserClient> GetAllApplicationUserNotValidated(){
-        return applicationUserBLL.GetAllApplicationUserNotValidated();
-    }
 
 
 }

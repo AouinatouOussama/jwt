@@ -37,6 +37,14 @@ public class ApplicationUserClient {
         this.profilePic= profilePic;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public  void addRoleToRoleNames (ApplicationRole role){
         this.roles.add(role);
     }

@@ -41,10 +41,15 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtLoginFilter(authenticationManager()))
                 .addFilterAfter(new JwtVerifier(),JwtLoginFilter.class)
                 .authorizeRequests()
-                .antMatchers("/login/**","/register/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/applicationusers/**").hasAnyAuthority("admin","superAdmin")
-                .antMatchers(HttpMethod.DELETE,"/applicationusers/**").hasAnyAuthority("admin","superAdmin")
-                .antMatchers(HttpMethod.PUT,"/applicationusers/{id}/applicationroles/{id}/**").hasAuthority("superAdmin")
+                .antMatchers("/login/**","/register/**"
+//                        "delete/applicationusers/**","applicationusers/username/**"
+                ).permitAll()
+                .antMatchers(HttpMethod.GET,"roles/applicationusers/notvalidated").hasAuthority("admin")
+                .antMatchers(HttpMethod.PUT,"roles/applicationusers/validate/**").hasAnyAuthority("admin")
+                .antMatchers(HttpMethod.PUT,"superAdmin/roles/{roleId}/applicationusers/{userId}").hasAuthority("superAdmin")
+                .antMatchers(HttpMethod.DELETE,"superAdmin/roles/{roleId}/applicationusers/{userId}").hasAuthority("superAdmin")
+//                .antMatchers(HttpMethod.DELETE,"/applicationusers/**").hasAnyAuthority("superAdmin")
+                //an admin can perform that
                 //  .antMatchers("/api/**").hasRole(STUDENT.name())
                 .anyRequest()
                 .authenticated();

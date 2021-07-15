@@ -2,6 +2,7 @@ package net.javaguides.demo.BLL.ApplicationUsers;
 
 
 import net.javaguides.demo.BLL.UserDetailsServiceImplementation;
+import net.javaguides.demo.ClientModels.ClientModelRequest.ChangePassword;
 import net.javaguides.demo.ClientModels.ClientModelRequest.RegisterForm;
 import net.javaguides.demo.ClientModels.ClientModelRequest.UpdateApplicationUser;
 import net.javaguides.demo.ClientModels.ClientModelResponse.ApplicationUserClient;
@@ -32,8 +33,6 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
 
     @Autowired
     UserDetailsServiceImplementation userDetailsServiceImplementation;
-
-
 
 
 
@@ -127,7 +126,7 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
 
         ApplicationUser  applicationUser = applicationUserRepo.findById(id).get();
 
-        if(applicationUser.getStatus()=="need to be validated"){
+        if(applicationUser.getStatus().equals("need to be validated")){
             applicationUser.setStatus("validated");
         }
 
@@ -153,7 +152,7 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
         List<ApplicationUserClient> list= new ArrayList<ApplicationUserClient>();
         List<ApplicationUser> applicationUsers= applicationUserRepo.findAll();
         for ( ApplicationUser user: applicationUsers ) {
-            if (user.getStatus()!="validated"){
+            if (! user.getStatus().equals("validated")){
                 ApplicationUserClient applicationUserClient = new ApplicationUserClient(
                         user.getId(),
                         user.getEmail(),
@@ -174,12 +173,15 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
     public ApplicationUserClient GetApplicationUserByUsername(String username) {
        ApplicationUser applicationUser = loadUserByUsername(username).get();
 
-        return new ApplicationUserClient(applicationUser.getId(),
-                    applicationUser.getEmail(),
+        ApplicationUserClient applicationUserClient= new ApplicationUserClient(applicationUser.getId(),
+                applicationUser.getEmail(),
                 applicationUser.getUsername(),
                 applicationUser.getFullName(),
-                    applicationUser.getProfilePic(),
+                applicationUser.getProfilePic(),
                 applicationUser.getStatus());
+
+        applicationUserClient.setRoles(applicationUser.getRoles());
+        return applicationUserClient;
 
     }
 
@@ -216,6 +218,29 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
         return  applicationUserClient;
     }
 
+
+    @Override
+    public ApplicationUserClient ChangePasswordUser(String username, ChangePassword changePassword) {
+
+        ApplicationUser  applicationUser = applicationUserRepo.loadUserByUsername(username).get();
+
+        applicationUser.setPassword(changePassword.getNewPassword());
+
+        ApplicationUser applicationUserUpdated= applicationUserRepo.save(applicationUser);
+
+        ApplicationUserClient applicationUserClient = new ApplicationUserClient(
+                applicationUserUpdated.getId(),
+                applicationUser.getEmail(),
+                applicationUser.getUsername(),
+                applicationUser.getFullName(),
+                applicationUser.getProfilePic(),
+                applicationUser.getStatus()
+        );
+
+        applicationUserClient.setRoles(applicationUser.getRoles());
+
+        return  applicationUserClient;
+    }
 
     @Override
     public ApplicationUserClient UpdateApplicationUserProfilePic(Long id, String imageURL) {
@@ -274,7 +299,16 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
         ApplicationUser applicationUser = applicationUserRepo.findById(userId).get();
         ApplicationRole applicationRole = applicationRoleRepo.findById(roleId).get();
 
-        applicationUser.AddRole(applicationRole);
+        boolean shouldBeAdded = true;
+        for (ApplicationRole role: applicationUser.getRoles()) {
+            if (roleId ==role.getId() ){
+                shouldBeAdded = false;
+            }
+        }
+
+        if(shouldBeAdded == true){
+            applicationUser.AddRole(applicationRole);
+        }
 
         return applicationUserRepo.save(applicationUser);
     }
@@ -292,6 +326,7 @@ public class ApplicationUserBLLImpl implements ApplicationUserBLL {
         return b;
 
     }
+
 
 
 }
